@@ -6,7 +6,17 @@
   "repository": "https://github.com/nasimulhasan513/node_js_boilerplates.git",
   "author": "Nasimul Hasan Deep",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon -r esm index.js",
+    "dev": "nodemon -r esm index.js",
+    "lint:fix": "eslint --fix ./*.js ./src/**/*.js"
+  },
   "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-promise": "^6.0.0",
     "esm": "^3.2.25",
     "mongoose": "^6.9.0",
     "nodemon": "^3.0.2"

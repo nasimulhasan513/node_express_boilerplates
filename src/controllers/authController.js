@@ -1,102 +1,100 @@
-import User from "../models/User";
-import CustomErrorHandler from "../services/CustomErrorHandler";
-import JwtService from "../services/JwtService";
-import authValidation from "../validation/authValidation";
+import User from '../models/User'
+import CustomErrorHandler from '../services/CustomErrorHandler'
+import JwtService from '../services/JwtService'
+import { loginValidation, signupValidation } from '../validation/authValidation'
 
 const authController = {
   me: async (req, res, next) => {
     try {
-      const user = await User.findOne({ _id: req.user._id });
+      const user = await User.findOne({ _id: req.user._id }).select('-password -updatedAt -__v')
       if (!user) {
-        return next(CustomErrorHandler.notFound());
+        return next(CustomErrorHandler.notFound())
       }
-      res.json(user);
+      res.json({
+        message: 'User found',
+        user
+      })
     } catch (error) {
-      return next(CustomErrorHandler.serverError(error));
+      return next(CustomErrorHandler.serverError(error))
     }
   },
   login: async (req, res, next) => {
     try {
-      const { error } = authValidation.loginValidation(req.body);
+      const { error } = loginValidation(req.body)
       if (error) {
-        return next(error);
+        return next(error)
       }
 
-      const { phone } = req.body;
+      const { phone } = req.body
 
-      const user = await User.findOne({ phone });
+      const user = await User.findOne({ phone })
       if (!user) {
-        return next(CustomErrorHandler.notFound());
+        return next(CustomErrorHandler.notFound())
       }
 
       // generate token
       const access_token = JwtService.sign({
-        _id: user._id,
-      });
+        _id: user._id
+      })
 
       res.json({
-        message: "Login Successful",
+        message: 'Login Successful',
         access_token,
-        user: {
-          _id: user._id,
-          name: user.name,
-          institute: user.institute,
-          phone: user.phone,
-        },
-      });
+        user
+      })
     } catch (error) {
-      return next(CustomErrorHandler.serverError(error));
+      return next(CustomErrorHandler.serverError(error))
     }
   },
   signup: async (req, res, next) => {
     try {
-      const { error } = authValidation.signupValidation(req.body);
+      const { error } = signupValidation(req.body)
       if (error) {
-        next(error);
+        next(error)
       }
-      const { name, institute, phone } = req.body;
-      let user = await User.findOne({ phone });
+      const { name, phone } = req.body
+      let user = await User.findOne({ phone }).select('-password -updatedAt -__v')
 
       if (!user) {
         user = await User.create({
           name,
-          institute,
-          phone,
-        });
+          phone
+          // other fields can be added here
+        }).select('-password -updatedAt -__v')
       }
 
       const access_token = JwtService.sign({
-        _id: user._id,
-      });
+        _id: user._id
+      })
       res.json({
-        message: "Signup Successful",
+        message: 'Signup Successful',
         access_token,
-        user: {
-          _id: user._id,
-          name: user.name,
-          institute: user.institute,
-          phone: user.phone,
-        },
-      });
+        user
+      })
     } catch (error) {
-      return next(CustomErrorHandler.serverError(error));
+      return next(CustomErrorHandler.serverError(error))
     }
   },
+
+  refresh: async (req, res, next) => {},
+  forgetPassword: async (req, res, next) => {},
+  resetPassword: async (req, res, next) => {},
+  validateOtp: async (req, res, next) => {},
 
   destroy: async (req, res) => {
     try {
-      const { id } = req.user._id;
-      const user = await User.findByIdAndDelete(id);
+      const { id } = req.user._id
+      const user = await User.findByIdAndDelete(id)
       if (!user) {
-        return CustomErrorHandler.notFound();
+        return CustomErrorHandler.notFound()
       }
       res.json({
-        message: "Deleted Successfully",
-      });
+        message: 'Deleted Successfully'
+      })
     } catch (error) {
-      return CustomErrorHandler.serverError(error);
+      return CustomErrorHandler.serverError(error)
     }
-  },
-};
+  }
+}
 
-export default authController;
+export default authController
