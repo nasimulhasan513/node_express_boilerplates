@@ -8,6 +8,18 @@ const userSchema = new Schema({
     min: 3,
     max: 255
   },
+  class: {
+    type: String,
+    required: true,
+    min: 3,
+    max: 255
+  },
+  institute: {
+    type: String,
+    required: true,
+    min: 3,
+    max: 255
+  },
   phone: {
     type: String,
     required: true,
@@ -15,19 +27,27 @@ const userSchema = new Schema({
     min: 10,
     max: 12
   },
-  email: {
-    type: String,
-    required: true,
-    min: 6,
-    max: 255
-  },
-
   password: {
     type: String,
     required: true,
     min: 6,
     max: 1024
+  },
+  nid: {
+    type: String,
+    required: true
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  reference: {
+    type: String
+  },
+  fcm_tokens: {
+    type: [String]
   }
+
 })
 
 userSchema.plugin(mongoosePaginate)
